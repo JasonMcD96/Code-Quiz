@@ -9,6 +9,10 @@ var initalsInput = document.querySelector("#initialsInput");
 var saveBtn = document.querySelector("#saveButton");
 var clearBtn = document.querySelector("#clearButton");
 var highscoresTextLink = document.querySelector("#highscoresWord");
+var restartBtn = document.querySelector("#restartButton");
+var timerNumber = document.querySelector("#time");
+var finalScoreLine = document.querySelector("#scoreLine");
+var finalScoreDisplay = document.querySelector("#finalScore"); 
 
 var aText = document.querySelector("#textA");
 var bText = document.querySelector("#textB")
@@ -20,12 +24,12 @@ var bBtn = document.querySelector("#b");
 var cBtn = document.querySelector("#c");
 var dBtn = document.querySelector("#d");
 
-//hide the buttons and other items
-aBtn.style.display = "none";
-bBtn.style.display = "none";
-cBtn.style.display = "none";
-dBtn.style.display = "none";
-scoreSaveArea.style.display = "none";
+// hide the buttons and other items
+// aBtn.style.display = "none";
+// bBtn.style.display = "none";
+// cBtn.style.display = "none";
+// dBtn.style.display = "none";
+//scoreSaveArea.style.display = "none";
 
 //global variables
 var currentQuestion = -1; //0 based indexing for questions
@@ -33,6 +37,8 @@ var currentAnswer;
 var questionsArray = [];
 var scoresArray = [];
 var playerScore = 0;
+var timeLeft = 30; //technically the max time available
+var interval;
 
 var promptArray = [
     "Which of the following is a string?",
@@ -71,6 +77,7 @@ startButton.addEventListener("click", function (event) {
     bBtn.style.display = "block";
     cBtn.style.display = "block";
     dBtn.style.display = "block";
+    finalScoreLine.style.display = "block";
     startButton.style.display = "none";
     title.style.display = "none";
 
@@ -80,6 +87,26 @@ startButton.addEventListener("click", function (event) {
     getNextQuestion();
 
 });
+
+//timer event
+startButton.addEventListener("click", function(event){
+    event.preventDefault();
+
+    interval = setInterval(function(){
+        timeLeft--;
+        timerNumber.textContent = " " + timeLeft;
+        if(timeLeft <= 0){
+            showEndOfQuiz();
+            clearInterval(interval);
+        }
+
+    }, 1000)
+})
+
+restartBtn.addEventListener("click", function(event){
+    event.preventDefault();
+    window.location.reload();
+})
 
 // Save score on save button click
 saveBtn.addEventListener("click", function(event){
@@ -114,7 +141,9 @@ clearBtn.addEventListener("click", function(event){
 highscoresTextLink.addEventListener("click", function(event){
     //probably need to kill timer and set score to zero
     event.preventDefault();
+    startButton.style.display = "none";
     playerScore = 0;
+    finalScoreLine.style.display = "block";
     showEndOfQuiz();
 })
 
@@ -126,9 +155,11 @@ qBox.addEventListener("click", function (event) {
     if (event.target.matches(".answerBtn")) {
         if (event.target.textContent == displayedQuestion.cAnswer) {
             playerScore += 10;
+            finalScoreDisplay.textContent = playerScore;
             //display that answer was correct?
         } else {
             //reduce time
+            timeLeft -= 4;
             //display answer was wrong?
         }
         //next question
@@ -153,9 +184,12 @@ function getNextQuestion() {
 }
 
 function showEndOfQuiz() {
+    timerNumber.textContent = " " + 0;
+    clearInterval(interval);
     hideButtonsAndText();
     scoreSaveArea.style.display = "flex";
     title.style.display = "block";
+    finalScoreDisplay.textContent = playerScore;
     loadScores();
     title.textContent = "Highscores";
 }
