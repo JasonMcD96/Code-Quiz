@@ -1,30 +1,36 @@
-$("#a").hide();
-$("#b").hide();
-$("#c").hide();
-$("#d").hide();
-
 //html items
 var startButton = document.querySelector("#startButton");
 var questionElement = document.querySelector("#question");
 var qBox = document.querySelector("#questionBox")
 var title = document.querySelector("#title");
-var aBtn = document.querySelector("#a");
-var bBtn = document.querySelector("#b");
-var cBtn = document.querySelector("#c");
-var dBtn = document.querySelector("#d");
+var scoreList = document.querySelector("#scoreList");
+var scoreSaveArea = document.querySelector("#saveScoreDiv");
+var initalsInput = document.querySelector("#initialsInput");
+var saveBtn = document.querySelector("#saveButton");
 
 var aText = document.querySelector("#textA");
 var bText = document.querySelector("#textB")
 var cText = document.querySelector("#textC")
 var dText = document.querySelector("#textD")
 
+var aBtn = document.querySelector("#a");
+var bBtn = document.querySelector("#b");
+var cBtn = document.querySelector("#c");
+var dBtn = document.querySelector("#d");
 
+//hide the buttons and other items
+aBtn.style.display = "none";
+bBtn.style.display = "none";
+cBtn.style.display = "none";
+dBtn.style.display = "none";
+scoreSaveArea.style.display = "none";
 
 //global variables
 var currentQuestion = -1; //0 based indexing for questions
 var currentAnswer;
 var questionsArray = [];
-var score = 0;
+var playerScore = 0;
+var scoresArray = [];
 
 var promptArray = [
     "Which of the following is a string?",
@@ -46,39 +52,41 @@ const B = 1;
 const C = 2;
 const D = 3;
 
-
-// var exampleQuestion = {
-//     question: "Which of the following is a string?",
-//     cAnswer: 2,
-//     choices: ["3", "false", "\"javascript\"", "5.6"],
-// }
-
-
 // Functions
-
 startButton.addEventListener("click", function (event) {
     event.preventDefault();
-    score = 0;
-    $("#a").show();
-    $("#b").show();
-    $("#c").show();
-    $("#d").show();
-    loadQuestions();
     currentQuestion = -1;
-
-    //start timer
-
-    //poof start button
+    score = 0;
+    aBtn.style.display = "block";
+    bBtn.style.display = "block";
+    cBtn.style.display = "block";
+    dBtn.style.display = "block";
     startButton.style.display = "none";
-
-    //poof title
     title.style.display = "none";
+
+    loadQuestions(); //loads questions into usable global array
 
     //load next question
     getNextQuestion();
 
 });
 
+// Save score on save button click
+saveBtn.addEventListener("click", function(event){
+    event.preventDefault();
+    if(initalsInput.value.trim() === ""){
+        alert("Error: If you want to save please enter initials")
+    }
+    var newScore = {
+        name: initalsInput.value.trim(),
+        score: playerScore
+    }
+
+    saveScore(newScore);
+
+});
+
+//Listener for multiple choice buttons
 
 qBox.addEventListener("click", function (event) {
     event.preventDefault();
@@ -86,7 +94,7 @@ qBox.addEventListener("click", function (event) {
     var displayedQuestion = questionsArray[currentQuestion];
     if (event.target.matches(".answerBtn")) {
         if (event.target.textContent == displayedQuestion.cAnswer) {
-            score += 10;
+            playerScore += 10;
             //display that answer was correct
         } else {
             //display answer was wrong
@@ -97,13 +105,11 @@ qBox.addEventListener("click", function (event) {
 
 });
 
-
-
 function getNextQuestion() {
 
-    if(currentQuestion+1 === promptArray.length){
-        alert("End of quiz");
-        //show highscore screen
+    if (currentQuestion + 1 === promptArray.length) {
+        //show highscore information
+        showEndOfQuiz();
         return;
     }
     currentQuestion++;
@@ -111,8 +117,24 @@ function getNextQuestion() {
     var prompt = newQuestion.question;
     var cAnswer = newQuestion.cAnswer;
     var choices = newQuestion.choices;
-
     writeQuestion(prompt, cAnswer, choices);
+}
+
+function showEndOfQuiz() {
+    hideButtonsAndText();
+    scoreSaveArea.style.display = "block";
+    title.style.display = "block";
+    loadScores();
+    title.textContent = "Highscores";
+}
+
+function loadScores() {
+    var scores = JSON.parse(localStorage.getItem('highscores'));
+    if (scores != null) {
+
+    } else {
+        return;
+    }
 }
 
 function writeQuestion(question, answer, options) {
@@ -135,7 +157,6 @@ function writeQuestion(question, answer, options) {
 
 //put created questions into usable array
 function loadQuestions() {
-
     for (var i = 0; i < promptArray.length; i++) {
         var obj = {
             question: promptArray[i],
@@ -144,6 +165,22 @@ function loadQuestions() {
         }
         questionsArray.push(obj);
     }
+}
 
-    //questionsArray.push(exampleQuestion);
+function saveScore(obj){
+    //come back and sort the array
+    scoresArray.push(obj);
+    localStorage.setItem('highscores', JSON.stringify(scoresArray));
+}
+
+function hideButtonsAndText() {
+    aBtn.style.display = "none";
+    bBtn.style.display = "none";
+    cBtn.style.display = "none";
+    dBtn.style.display = "none";
+    aText.textContent = "";
+    bText.textContent = "";
+    cText.textContent = "";
+    dText.textContent = "";
+    question.textContent = "";
 }
