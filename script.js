@@ -7,6 +7,8 @@ var scoreList = document.querySelector("#scoreList");
 var scoreSaveArea = document.querySelector("#saveScoreDiv");
 var initalsInput = document.querySelector("#initialsInput");
 var saveBtn = document.querySelector("#saveButton");
+var clearBtn = document.querySelector("#clearButton");
+var highscoresTextLink = document.querySelector("#highscoresWord");
 
 var aText = document.querySelector("#textA");
 var bText = document.querySelector("#textB")
@@ -29,8 +31,8 @@ scoreSaveArea.style.display = "none";
 var currentQuestion = -1; //0 based indexing for questions
 var currentAnswer;
 var questionsArray = [];
-var playerScore = 0;
 var scoresArray = [];
+var playerScore = 0;
 
 var promptArray = [
     "Which of the following is a string?",
@@ -52,7 +54,15 @@ const B = 1;
 const C = 2;
 const D = 3;
 
+init();
 // Functions
+
+function init(){
+    //creates the element in local if it doesnt exist
+    if(localStorage.getItem('highscores') === null){
+        localStorage.setItem('highscores', JSON.stringify(scoresArray));
+    }
+}
 startButton.addEventListener("click", function (event) {
     event.preventDefault();
     currentQuestion = -1;
@@ -76,18 +86,39 @@ saveBtn.addEventListener("click", function(event){
     event.preventDefault();
     if(initalsInput.value.trim() === ""){
         alert("Error: If you want to save please enter initials")
+        return;
     }
+
+    wipeDisplayedScores();
     var newScore = {
         name: initalsInput.value.trim(),
         score: playerScore
     }
 
     saveScore(newScore);
+    loadScores();
 
 });
 
-//Listener for multiple choice buttons
+clearBtn.addEventListener("click", function(event){
+    event.preventDefault();
+    
+    if(confirm("WARNING: THIS WILL DELETE ALL RECORDS!")){
+        wipeDisplayedScores();
+        var emptyArray = [];
+        localStorage.setItem("highscores", JSON.stringify(emptyArray));
+        alert("DELETED");
+    }
+});
 
+highscoresTextLink.addEventListener("click", function(event){
+    //probably need to kill timer and set score to zero
+    event.preventDefault();
+    playerScore = 0;
+    showEndOfQuiz();
+})
+
+//Listener for multiple choice buttons
 qBox.addEventListener("click", function (event) {
     event.preventDefault();
     //user makes a choice
@@ -95,9 +126,10 @@ qBox.addEventListener("click", function (event) {
     if (event.target.matches(".answerBtn")) {
         if (event.target.textContent == displayedQuestion.cAnswer) {
             playerScore += 10;
-            //display that answer was correct
+            //display that answer was correct?
         } else {
-            //display answer was wrong
+            //reduce time
+            //display answer was wrong?
         }
         //next question
         getNextQuestion();
@@ -122,16 +154,22 @@ function getNextQuestion() {
 
 function showEndOfQuiz() {
     hideButtonsAndText();
-    scoreSaveArea.style.display = "block";
+    scoreSaveArea.style.display = "flex";
     title.style.display = "block";
     loadScores();
     title.textContent = "Highscores";
 }
 
 function loadScores() {
-    var scores = JSON.parse(localStorage.getItem('highscores'));
-    if (scores != null) {
-
+    wipeDisplayedScores();
+    scoresArray = JSON.parse(localStorage.getItem('highscores'));
+    if (scoresArray != null) {
+        for(var i = 0; i < scoresArray.length; i++){
+            var newLI = document.createElement('li');
+            newLI.innerHTML = "<span id=\"initials\">" + scoresArray[i].name + "</span>-"+
+            "Score: <span>"+ scoresArray[i].score+"</span>";
+            scoreList.appendChild(newLI);
+        }
     } else {
         return;
     }
@@ -168,9 +206,18 @@ function loadQuestions() {
 }
 
 function saveScore(obj){
-    //come back and sort the array
-    scoresArray.push(obj);
-    localStorage.setItem('highscores', JSON.stringify(scoresArray));
+    //come back and sort the array before saving
+
+    var tempScores = JSON.parse(localStorage.getItem('highscores'));
+    tempScores.push(obj);
+    localStorage.setItem('highscores', JSON.stringify(tempScores));
+}
+
+function wipeDisplayedScores(){
+    
+    while(scoreList.firstChild){
+        scoreList.removeChild(scoreList.firstChild);
+    }
 }
 
 function hideButtonsAndText() {
