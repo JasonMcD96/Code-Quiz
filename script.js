@@ -24,35 +24,32 @@ var bBtn = document.querySelector("#b");
 var cBtn = document.querySelector("#c");
 var dBtn = document.querySelector("#d");
 
-// hide the buttons and other items
-// aBtn.style.display = "none";
-// bBtn.style.display = "none";
-// cBtn.style.display = "none";
-// dBtn.style.display = "none";
-//scoreSaveArea.style.display = "none";
-
 //global variables
 var currentQuestion = -1; //0 based indexing for questions
 var currentAnswer;
 var questionsArray = [];
 var scoresArray = [];
 var playerScore = 0;
-var timeLeft = 30; //technically the max time available
+var timeLeft = 30; //also max time available
 var interval;
 
 var promptArray = [
     "Which of the following is a string?",
     "What operator gives you a remainder of a number?",
+    "What is the main language used for back end web development?",
+    "Which of the following is used to print to the console in Javascript"
 ]
-
-// A = 0, B = 1, C = 2, D = 3
-var cAnswersArray = ['C', 'D']
 
 // each index is an array
 var choicesArray = [
     ["3", "false", "\"javascript\"", "5.6"],
-    ['+', '-', '===', '%']
+    ['+', '-', '===', '%'],
+    ['Javascript', 'HTML', 'CSS', 'C#'],
+    ['System.out.println();', 'write()', 'console.write()', 'console.log()'],
 ]
+
+// A = 0, B = 1, C = 2, D = 3
+var cAnswersArray = ['C', 'D', 'A', 'D']
 
 //keyCodes
 const A = 0;
@@ -68,7 +65,8 @@ function init(){
     if(localStorage.getItem('highscores') === null){
         localStorage.setItem('highscores', JSON.stringify(scoresArray));
     }
-}
+};
+
 startButton.addEventListener("click", function (event) {
     event.preventDefault();
     currentQuestion = -1;
@@ -82,8 +80,6 @@ startButton.addEventListener("click", function (event) {
     title.style.display = "none";
 
     loadQuestions(); //loads questions into usable global array
-
-    //load next question
     getNextQuestion();
 
 });
@@ -91,7 +87,6 @@ startButton.addEventListener("click", function (event) {
 //timer event
 startButton.addEventListener("click", function(event){
     event.preventDefault();
-
     interval = setInterval(function(){
         timeLeft--;
         timerNumber.textContent = " " + timeLeft;
@@ -99,7 +94,6 @@ startButton.addEventListener("click", function(event){
             showEndOfQuiz();
             clearInterval(interval);
         }
-
     }, 1000)
 })
 
@@ -115,13 +109,11 @@ saveBtn.addEventListener("click", function(event){
         alert("Error: If you want to save please enter initials")
         return;
     }
-
     wipeDisplayedScores();
     var newScore = {
         name: initalsInput.value.trim(),
         score: playerScore
     }
-
     saveScore(newScore);
     loadScores();
 
@@ -129,7 +121,6 @@ saveBtn.addEventListener("click", function(event){
 
 clearBtn.addEventListener("click", function(event){
     event.preventDefault();
-    
     if(confirm("WARNING: THIS WILL DELETE ALL RECORDS!")){
         wipeDisplayedScores();
         var emptyArray = [];
@@ -150,18 +141,19 @@ highscoresTextLink.addEventListener("click", function(event){
 //Listener for multiple choice buttons
 qBox.addEventListener("click", function (event) {
     event.preventDefault();
-    //user makes a choice
     var displayedQuestion = questionsArray[currentQuestion];
+    
+    //user chooses an answer choice
     if (event.target.matches(".answerBtn")) {
-        if (event.target.textContent == displayedQuestion.cAnswer) {
+        if (event.target.textContent == displayedQuestion.cAnswer) { //correct answer
             playerScore += 10;
             finalScoreDisplay.textContent = playerScore;
-            //display that answer was correct?
-        } else {
+
+        } else { //wrong answer
             //reduce time
             timeLeft -= 4;
-            //display answer was wrong?
         }
+
         //next question
         getNextQuestion();
     }
@@ -240,10 +232,10 @@ function loadQuestions() {
 }
 
 function saveScore(obj){
-    //come back and sort the array before saving
 
     var tempScores = JSON.parse(localStorage.getItem('highscores'));
     tempScores.push(obj);
+    tempScores.sort(function(a,b){return b.score - a.score});
     localStorage.setItem('highscores', JSON.stringify(tempScores));
 }
 
