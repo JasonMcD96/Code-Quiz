@@ -38,7 +38,7 @@ var promptArray = [
     "What operator gives you a remainder of a number?",
     "What is the main language used for editing the DOM?",
     "Which of the following is used to print to the console in Javascript",
-    "Whic of the following is used to select the #question element using jQuery?",
+    "Which of the following is used to select the #question element using jQuery?",
 ]
 
 // each index is an array
