@@ -1,7 +1,11 @@
 header{
     font-family: 'Goldman', cursive;
+    font-size: 18px;
 }
 
+p{
+    font-size: 16px;
+}
 body{
     background-color: whitesmoke;
 }
