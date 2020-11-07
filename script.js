@@ -36,8 +36,9 @@ var interval;
 var promptArray = [
     "Which of the following is a string?",
     "What operator gives you a remainder of a number?",
-    "What is the main language used for back end web development?",
-    "Which of the following is used to print to the console in Javascript"
+    "What is the main language used for editing the DOM?",
+    "Which of the following is used to print to the console in Javascript",
+    "Whic of the following is used to select the #question element using jQuery?",
 ]
 
 // each index is an array
@@ -45,11 +46,12 @@ var choicesArray = [
     ["3", "false", "\"javascript\"", "5.6"],
     ['+', '-', '===', '%'],
     ['Javascript', 'HTML', 'CSS', 'C#'],
-    ['System.out.println();', 'write()', 'console.write()', 'console.log()'],
+    ['System.out.println();', 'write();', 'console.write();', 'console.log();'],
+    ['&("#question")', '$("#question")', 'jQuery("#question")', 'select("#question")']
 ]
 
 // A = 0, B = 1, C = 2, D = 3
-var cAnswersArray = ['C', 'D', 'A', 'D']
+var cAnswersArray = ['C', 'D', 'A', 'D', 'B']
 
 //keyCodes
 const A = 0;
@@ -153,7 +155,6 @@ qBox.addEventListener("click", function (event) {
             //reduce time
             timeLeft -= 4;
         }
-
         //next question
         getNextQuestion();
     }
