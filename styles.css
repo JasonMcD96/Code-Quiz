@@ -1,0 +1,42 @@
+header{
+    font-family: 'Goldman', cursive;
+}
+
+body{
+    background-color: whitesmoke;
+}
+
+#highscoresWord{
+    float: left;
+    padding-left: 10px;
+}
+
+#timerDiv{
+    text-align: right;
+    padding-right: 10px;
+}
+
+main{
+   margin-top: 15px;
+   padding: 10px;
+    clear: both;
+}
+
+#question {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+#title {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+}
+
+#scoreline{
+    text-decoration: underline;
+}
+
+#saveScoreDiv, #a, #b, #c, #d, #scoreLine {
+    display: none;
+}
+
